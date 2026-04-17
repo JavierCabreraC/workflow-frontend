@@ -1,1 +1,86 @@
-<p>ai-assistant works!</p>
+<div class="ai-panel">
+  <!-- Header with mode toggle -->
+  <div class="ai-header">
+    <mat-icon class="ai-icon">psychology</mat-icon>
+    <span class="ai-title">Asistente IA</span>
+    <div class="mode-toggle">
+      <button [class.active]="mode === 'editor'" (click)="setMode('editor')" matTooltip="Modificar diagrama">
+        <mat-icon>edit</mat-icon>
+      </button>
+      <button [class.active]="mode === 'tutor'" (click)="setMode('tutor')" matTooltip="Modo tutor">
+        <mat-icon>school</mat-icon>
+      </button>
+    </div>
+  </div>
+
+  <div class="mode-label">
+    @if (mode === 'editor') {
+      <mat-icon>draw</mat-icon> <span>Editor de diagrama</span>
+    } @else {
+      <mat-icon>school</mat-icon> <span>Tutor / Consultas</span>
+    }
+  </div>
+
+  <!-- Chat history -->
+  <div class="chat-history" #chatScroll>
+    @if (messages.length === 0) {
+      <div class="empty-hint">
+        @if (mode === 'editor') {
+          <mat-icon>draw</mat-icon>
+          <p>Describe cambios para el diagrama.<br>
+            Ej: <em>"Agrega una tarea de revisión en el primer carril"</em></p>
+        } @else {
+          <mat-icon>help_outline</mat-icon>
+          <p>Haz preguntas sobre workflows o BPMN.<br>
+            Ej: <em>"¿Qué es un nodo fork?"</em></p>
+        }
+      </div>
+    }
+    @for (msg of messages; track $index) {
+      <div class="message" [class.user]="msg.role === 'user'" [class.assistant]="msg.role === 'assistant'">
+        @if (msg.role === 'assistant') {
+          <mat-icon class="msg-icon">psychology</mat-icon>
+        }
+        <div class="msg-bubble">{{ msg.text }}</div>
+        @if (msg.role === 'user') {
+          <mat-icon class="msg-icon">person</mat-icon>
+        }
+      </div>
+    }
+    @if (loading) {
+      <div class="message assistant">
+        <mat-icon class="msg-icon">psychology</mat-icon>
+        <div class="msg-bubble typing">
+          <span></span><span></span><span></span>
+        </div>
+      </div>
+    }
+  </div>
+
+  <!-- Input area -->
+  <div class="input-area">
+    <textarea
+      class="prompt-input"
+      [(ngModel)]="prompt"
+      (keydown)="onKeydown($event)"
+      [placeholder]="mode === 'editor' ? 'Describe cambios al diagrama...' : 'Haz una pregunta...'"
+      rows="3"
+      [disabled]="loading">
+    </textarea>
+    <div class="input-actions">
+      <button mat-icon-button class="mic-btn" [class.recording]="recording"
+              (click)="toggleRecording()" matTooltip="Entrada por voz"
+              [disabled]="loading">
+        <mat-icon>{{ recording ? 'stop' : 'mic' }}</mat-icon>
+      </button>
+      <button mat-flat-button color="primary" class="send-btn"
+              (click)="send()" [disabled]="!prompt.trim() || loading">
+        @if (loading) {
+          <mat-spinner diameter="18" />
+        } @else {
+          <mat-icon>send</mat-icon>
+        }
+      </button>
+    </div>
+  </div>
+</div>

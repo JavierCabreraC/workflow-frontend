@@ -1,1 +1,9 @@
-<p>canvas works!</p>
+<div class="canvas-wrapper">
+  <div #graphContainer class="graph-container"></div>
+  @if (processingAi) {
+    <div class="ai-overlay">
+      <mat-spinner diameter="40" />
+      <span>Procesando con IA...</span>
+    </div>
+  }
+</div>

@@ -1,0 +1,87 @@
+<div class="list-page">
+  <div class="page-header">
+    <div class="header-left">
+      <mat-icon class="header-icon">account_tree</mat-icon>
+      <div>
+        <h1>Políticas de Negocio</h1>
+        <p>Gestiona los flujos de trabajo organizacionales</p>
+      </div>
+    </div>
+    <button mat-flat-button color="primary" (click)="openCreate()">
+      <mat-icon>add</mat-icon>
+      Nueva Política
+    </button>
+  </div>
+
+  @if (loading) {
+    <div class="loading-state">
+      <mat-spinner diameter="40" />
+      <p>Cargando políticas...</p>
+    </div>
+  } @else if (policies.length === 0) {
+    <div class="empty-state">
+      <mat-icon>account_tree</mat-icon>
+      <h3>Sin políticas aún</h3>
+      <p>Crea tu primera política para comenzar a diseñar flujos de trabajo</p>
+      <button mat-flat-button color="primary" (click)="openCreate()">
+        <mat-icon>add</mat-icon> Crear política
+      </button>
+    </div>
+  } @else {
+    <mat-card class="table-card">
+      <table mat-table [dataSource]="policies" class="policy-table">
+
+        <ng-container matColumnDef="name">
+          <th mat-header-cell *matHeaderCellDef>Nombre</th>
+          <td mat-cell *matCellDef="let p">
+            <div class="policy-name">
+              <mat-icon>account_tree</mat-icon>
+              <div>
+                <span class="name">{{ p.name }}</span>
+                <span class="desc">{{ p.description }}</span>
+              </div>
+            </div>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef>Estado</th>
+          <td mat-cell *matCellDef="let p">
+            <span class="status-chip" [class]="p.status.toLowerCase()">
+              {{ p.status === 'ACTIVE' ? 'Activa' : p.status === 'DRAFT' ? 'Borrador' : 'Inactiva' }}
+            </span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="createdAt">
+          <th mat-header-cell *matHeaderCellDef>Creado</th>
+          <td mat-cell *matCellDef="let p" class="date-cell">
+            {{ p.createdAt | date:'dd/MM/yyyy' }}
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef></th>
+          <td mat-cell *matCellDef="let p" class="actions-cell">
+            <button mat-icon-button (click)="editPolicy(p.id)" matTooltip="Editar diagrama" color="primary">
+              <mat-icon>edit</mat-icon>
+            </button>
+            <button mat-icon-button (click)="toggleStatus(p)"
+                    [matTooltip]="p.status === 'ACTIVE' ? 'Desactivar' : 'Activar'"
+                    [color]="p.status === 'ACTIVE' ? 'warn' : 'accent'">
+              <mat-icon>{{ p.status === 'ACTIVE' ? 'toggle_on' : 'toggle_off' }}</mat-icon>
+            </button>
+            <button mat-icon-button (click)="deletePolicy(p)" matTooltip="Eliminar"
+                    [disabled]="p.status !== 'DRAFT'" color="warn">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="columns"></tr>
+        <tr mat-row *matRowDef="let row; columns: columns;"
+            class="policy-row" (click)="editPolicy(row.id)"></tr>
+      </table>
+    </mat-card>
+  }
+</div>

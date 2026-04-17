@@ -1,0 +1,36 @@
+<div class="node-panel">
+  <div class="panel-header">
+    <mat-icon>widgets</mat-icon>
+    <span>Elementos</span>
+  </div>
+
+  <p class="panel-hint">Arrastra un elemento al diagrama</p>
+
+  <div class="node-list">
+    @for (node of nodes; track node.type) {
+      <div class="node-item"
+           draggable="true"
+           (dragstart)="onDragStart($event, node.type)"
+           [matTooltip]="node.description"
+           matTooltipPosition="right">
+        <div class="node-icon" [style.background]="node.color">
+          <mat-icon>{{ node.icon }}</mat-icon>
+        </div>
+        <div class="node-info">
+          <span class="node-label">{{ node.label }}</span>
+          <span class="node-desc">{{ node.description }}</span>
+        </div>
+        <mat-icon class="drag-handle">drag_indicator</mat-icon>
+      </div>
+    }
+  </div>
+
+  <mat-divider />
+
+  <div class="actions">
+    <button mat-stroked-button class="add-lane-btn" (click)="addLane.emit()">
+      <mat-icon>add</mat-icon>
+      Agregar carril
+    </button>
+  </div>
+</div>

@@ -1,0 +1,63 @@
+@if (loading) {
+  <div class="loading-screen">
+    <mat-spinner diameter="48" />
+    <p>Cargando editor...</p>
+  </div>
+} @else {
+  <div class="editor-shell">
+
+    <!-- Toolbar -->
+    <div class="toolbar">
+      <button mat-icon-button (click)="backToList()" matTooltip="Volver a políticas">
+        <mat-icon>arrow_back</mat-icon>
+      </button>
+
+      <mat-icon class="toolbar-sep">account_tree</mat-icon>
+      <span class="policy-name">{{ policy?.name }}</span>
+
+      <span class="status-chip" [class]="policy?.status?.toLowerCase()">
+        {{ policy?.status === 'ACTIVE' ? 'Activa' : policy?.status === 'DRAFT' ? 'Borrador' : 'Inactiva' }}
+      </span>
+
+      <span class="spacer"></span>
+
+      <span class="users-indicator" matTooltip="Usuarios conectados">
+        <mat-icon>group</mat-icon> {{ connectedUsers }}
+      </span>
+
+      <button mat-stroked-button (click)="toggleStatus()" [matTooltip]="policy?.status === 'ACTIVE' ? 'Desactivar' : 'Activar'">
+        <mat-icon>{{ policy?.status === 'ACTIVE' ? 'toggle_on' : 'toggle_off' }}</mat-icon>
+        {{ policy?.status === 'ACTIVE' ? 'Desactivar' : 'Activar' }}
+      </button>
+
+      <button mat-flat-button color="primary" (click)="save()" [disabled]="saving">
+        @if (saving) {
+          <mat-spinner diameter="18" />
+        } @else {
+          <mat-icon>save</mat-icon>
+        }
+        Guardar
+      </button>
+    </div>
+
+    <!-- Three-panel layout -->
+    <div class="panels">
+      <app-node-panel (addLane)="onAddLane()" />
+
+      <div class="canvas-area">
+        <app-canvas
+          [graph]="currentGraph"
+          [processingAi]="aiProcessing"
+          (graphChanged)="onGraphChanged($event)"
+        />
+      </div>
+
+      <app-ai-assistant
+        [currentGraph]="currentGraph"
+        (mutationsReady)="onMutationsReady($event)"
+        (processingChange)="onAiProcessing($event)"
+      />
+    </div>
+
+  </div>
+}

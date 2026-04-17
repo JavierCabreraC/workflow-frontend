@@ -1,14 +1,81 @@
-<div class="login-container">
-  <mat-card class="login-card">
-    <mat-card-header>
-      <div class="logo-section">
-        <mat-icon class="logo-icon">account_tree</mat-icon>
-        <h1 class="app-title">Workflow</h1>
-        <p class="app-subtitle">Gestión de Trámites</p>
-      </div>
-    </mat-card-header>
+<div class="landing-page">
 
-    <mat-card-content>
+  <!-- LEFT: Hero Panel -->
+  <div class="hero-panel">
+    <div class="bg-shapes">
+      <div class="shape shape-1"></div>
+      <div class="shape shape-2"></div>
+      <div class="shape shape-3"></div>
+    </div>
+
+    <div class="hero-content">
+      <div class="brand">
+        <div class="brand-icon">
+          <mat-icon>account_tree</mat-icon>
+        </div>
+        <div class="brand-text">
+          <h1>Workflow</h1>
+          <span>Sistema de Gestión de Trámites</span>
+        </div>
+      </div>
+
+      <div class="tagline">
+        <h2>Digitaliza y automatiza tus<br>
+          <span class="highlight">procesos organizacionales</span>
+        </h2>
+        <p>Diseña flujos de trabajo visuales, asigna tareas inteligentemente y
+          haz seguimiento en tiempo real con asistencia de IA.</p>
+      </div>
+
+      <div class="features">
+        <div class="feature-item">
+          <mat-icon>draw</mat-icon>
+          <div>
+            <strong>Editor Visual</strong>
+            <p>Diseña diagramas UML con swimlanes usando arrastrar y soltar</p>
+          </div>
+        </div>
+        <div class="feature-item">
+          <mat-icon>psychology</mat-icon>
+          <div>
+            <strong>IA Integrada</strong>
+            <p>Asistente que modifica flujos con comandos de voz o texto natural</p>
+          </div>
+        </div>
+        <div class="feature-item">
+          <mat-icon>bolt</mat-icon>
+          <div>
+            <strong>Tiempo Real</strong>
+            <p>Colaboración simultánea y notificaciones push instantáneas</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="role-chips">
+        <span class="chip admin">
+          <mat-icon>admin_panel_settings</mat-icon> Administrador
+        </span>
+        <span class="chip funcionario">
+          <mat-icon>badge</mat-icon> Funcionario
+        </span>
+        <span class="chip cliente">
+          <mat-icon>person</mat-icon> Cliente
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT: Login Panel -->
+  <div class="login-panel">
+    <div class="login-content">
+      <div class="login-header">
+        <div class="login-logo">
+          <mat-icon>lock</mat-icon>
+        </div>
+        <h2>Iniciar Sesión</h2>
+        <p>Accede a tu espacio de trabajo</p>
+      </div>
+
       <form [formGroup]="form" (ngSubmit)="onSubmit()">
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Correo electrónico</mat-label>
@@ -23,7 +90,8 @@
 
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Contraseña</mat-label>
-          <input matInput [type]="hidePassword ? 'password' : 'text'" formControlName="password" autocomplete="current-password" />
+          <input matInput [type]="hidePassword ? 'password' : 'text'"
+                 formControlName="password" autocomplete="current-password" />
           <button mat-icon-button matSuffix type="button" (click)="hidePassword = !hidePassword">
             <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
           </button>
@@ -41,19 +109,19 @@
           </div>
         }
 
-        <button
-          mat-raised-button
-          color="primary"
-          type="submit"
-          class="full-width submit-btn"
-          [disabled]="form.invalid || loading">
+        <button mat-flat-button color="primary" type="submit"
+                class="full-width submit-btn" [disabled]="form.invalid || loading">
           @if (loading) {
-            <mat-spinner diameter="20" />
+            <mat-spinner diameter="22" />
           } @else {
-            Ingresar
+            Ingresar al Sistema
           }
         </button>
       </form>
-    </mat-card-content>
-  </mat-card>
+
+      <p class="footer-note">
+        Sistema interno — acceso solo para usuarios registrados
+      </p>
+    </div>
+  </div>
 </div>
