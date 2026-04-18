@@ -1,3 +1,6 @@
 import { Routes } from '@angular/router';
+import { AnalyticsDashboardComponent } from './analytics-dashboard/analytics-dashboard.component';
 
-export const analyticsRoutes: Routes = [];
+export const analyticsRoutes: Routes = [
+  { path: '', component: AnalyticsDashboardComponent }
+];

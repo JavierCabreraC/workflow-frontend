@@ -1,0 +1,50 @@
+@if (loading) {
+  <div class="loading-center"><mat-spinner diameter="48"></mat-spinner></div>
+} @else if (!task) {
+  <div class="empty-msg">
+    <mat-icon>error_outline</mat-icon>
+    <p>Tarea no encontrada.</p>
+    <button mat-button (click)="router.navigate(['/dashboard'])">Volver al monitor</button>
+  </div>
+} @else {
+  <div class="detail-container">
+    <mat-card class="detail-card">
+      <mat-card-header>
+        <mat-icon mat-card-avatar>task</mat-icon>
+        <mat-card-title>{{ task.nodeName }}</mat-card-title>
+        <mat-card-subtitle>Trámite: {{ task.tramiteId }}</mat-card-subtitle>
+      </mat-card-header>
+
+      <mat-card-content>
+        <form [formGroup]="form" class="task-form">
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Notas de atención</mat-label>
+            <textarea matInput formControlName="notes" rows="5"
+              placeholder="Describe las acciones realizadas..."></textarea>
+            @if (form.get('notes')?.hasError('required')) {
+              <mat-error>Las notas son requeridas</mat-error>
+            }
+          </mat-form-field>
+
+          <div class="file-section">
+            <label class="file-label">Adjuntar documentos (opcional)</label>
+            <input type="file" multiple (change)="onFileChange($event)" class="file-input" />
+            @if (attachments.length > 0) {
+              <p class="file-count">{{ attachments.length }} archivo(s) seleccionado(s)</p>
+            }
+          </div>
+        </form>
+      </mat-card-content>
+
+      <mat-card-actions align="end">
+        <button mat-button (click)="router.navigate(['/dashboard'])">Cancelar</button>
+        <button mat-raised-button color="primary"
+          [disabled]="form.invalid || saving"
+          (click)="complete()">
+          @if (saving) { <mat-spinner diameter="18" style="display:inline-block"></mat-spinner> }
+          @else { Completar tarea }
+        </button>
+      </mat-card-actions>
+    </mat-card>
+  </div>
+}

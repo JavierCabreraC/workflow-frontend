@@ -1,0 +1,56 @@
+.loading-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 300px;
+}
+
+.monitor-layout {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  padding: 16px;
+  height: calc(100vh - 64px);
+  overflow: hidden;
+}
+
+.column {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  overflow-y: auto;
+  padding: 8px;
+  border-radius: 8px;
+}
+
+.column-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 700;
+  font-size: 0.9rem;
+  padding: 8px 0;
+  border-bottom: 2px solid currentColor;
+  margin-bottom: 4px;
+}
+
+.column-pending { background: #fff5f5; }
+.column-pending .column-header { color: #c62828; }
+
+.column-inprogress { background: #fffde7; }
+.column-inprogress .column-header { color: #f57f17; }
+
+.column-completed { background: #f1f8e9; }
+.column-completed .column-header { color: #2e7d32; }
+
+.task-card { margin-bottom: 4px; }
+.task-card-done { opacity: 0.75; }
+
+.time-label { font-size: 0.75rem; color: #9e9e9e; margin: 0; }
+
+.empty-msg {
+  color: #bdbdbd;
+  font-size: 0.85rem;
+  text-align: center;
+  padding: 24px 0;
+}

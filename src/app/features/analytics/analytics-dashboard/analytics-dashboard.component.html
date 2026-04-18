@@ -1,0 +1,93 @@
+<div class="analytics-container">
+  <h2 class="page-title">Analytics de Políticas</h2>
+
+  <!-- Selector de política -->
+  <mat-form-field appearance="outline" class="policy-selector">
+    <mat-label>Seleccionar política</mat-label>
+    <mat-select [(ngModel)]="selectedPolicyId" (ngModelChange)="onPolicyChange()">
+      @for (p of activePolicies; track p.id) {
+        <mat-option [value]="p.id">{{ p.name }}</mat-option>
+      }
+    </mat-select>
+  </mat-form-field>
+
+  @if (selectedPolicyId) {
+    <!-- Tarjetas de resumen -->
+    <div class="summary-grid">
+      @for (card of summaryCards; track card.label) {
+        <mat-card [class.highlight-card]="card.highlight">
+          <mat-card-content class="summary-card-content">
+            <mat-icon [class.highlight-icon]="card.highlight">{{ card.icon }}</mat-icon>
+            <div>
+              <p class="summary-value">{{ card.value }}</p>
+              <p class="summary-label">{{ card.label }}</p>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      }
+    </div>
+
+    <!-- Tabla de funcionarios -->
+    <mat-card class="table-card">
+      <mat-card-header>
+        <mat-card-title>Rendimiento por Funcionario</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        @if (funcionarios.length === 0) {
+          <p class="empty-msg">Sin datos disponibles para esta política.</p>
+        } @else {
+          <table mat-table [dataSource]="funcionarios" matSort (matSortChange)="sortData($event)">
+            <ng-container matColumnDef="name">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header>Funcionario</th>
+              <td mat-cell *matCellDef="let row">{{ row.name }}</td>
+            </ng-container>
+            <ng-container matColumnDef="completed">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header>Completadas</th>
+              <td mat-cell *matCellDef="let row">{{ row.completed }}</td>
+            </ng-container>
+            <ng-container matColumnDef="avgMinutes">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header>Tiempo Prom. (min)</th>
+              <td mat-cell *matCellDef="let row">{{ row.avgMinutes }}</td>
+            </ng-container>
+            <ng-container matColumnDef="efficiency">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header>Eficiencia</th>
+              <td mat-cell *matCellDef="let row">{{ row.efficiency }}</td>
+            </ng-container>
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+          </table>
+        }
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Reporte de IA -->
+    <mat-card class="report-card">
+      <mat-card-header>
+        <mat-icon mat-card-avatar>psychology</mat-icon>
+        <mat-card-title>Análisis de IA — Cuellos de botella</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        @if (loadingReport) {
+          <div class="report-loading">
+            <mat-spinner diameter="36"></mat-spinner>
+            <span>Generando análisis...</span>
+          </div>
+        } @else if (report) {
+          <p class="report-text">{{ report.report }}</p>
+        } @else {
+          <p class="empty-msg">Sin reporte disponible.</p>
+        }
+      </mat-card-content>
+      <mat-card-actions>
+        <button mat-stroked-button color="primary" (click)="loadReport()" [disabled]="loadingReport">
+          <mat-icon>refresh</mat-icon> Actualizar análisis
+        </button>
+      </mat-card-actions>
+    </mat-card>
+  } @else {
+    <div class="no-selection">
+      <mat-icon>bar_chart</mat-icon>
+      <p>Selecciona una política para ver su análisis</p>
+    </div>
+  }
+</div>

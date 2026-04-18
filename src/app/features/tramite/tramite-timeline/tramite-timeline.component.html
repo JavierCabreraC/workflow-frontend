@@ -1,0 +1,60 @@
+@if (loading) {
+  <div class="loading-center"><mat-spinner diameter="48"></mat-spinner></div>
+} @else if (!tramite) {
+  <p class="empty-msg">Trámite no encontrado.</p>
+} @else {
+  <div class="timeline-container">
+    <div class="timeline-header">
+      <button mat-icon-button routerLink="/tramites" title="Volver">
+        <mat-icon>arrow_back</mat-icon>
+      </button>
+      <div>
+        <h2 class="client-name">{{ tramite.clientName }}</h2>
+        <p class="tramite-id">ID: {{ tramite.id }}</p>
+      </div>
+      <app-status-badge [status]="tramite.status" class="header-badge"></app-status-badge>
+    </div>
+
+    <div class="timeline">
+      @for (event of timeline; track event.nodeId; let i = $index) {
+        <div class="timeline-step" [class.step-current]="isCurrentNode(event)" [class.step-future]="!event.completedAt && !isCurrentNode(event)">
+          <div class="step-connector">
+            <div class="step-dot">
+              @if (event.completedAt) {
+                <mat-icon class="dot-icon done">check_circle</mat-icon>
+              } @else if (isCurrentNode(event)) {
+                <mat-icon class="dot-icon current pulse">radio_button_checked</mat-icon>
+              } @else {
+                <mat-icon class="dot-icon future">radio_button_unchecked</mat-icon>
+              }
+            </div>
+            @if (i < timeline.length - 1) {
+              <div class="step-line" [class.line-done]="event.completedAt"></div>
+            }
+          </div>
+
+          <mat-card class="step-card">
+            <mat-card-header>
+              <mat-card-title>{{ event.nodeName }}</mat-card-title>
+              @if (event.completedAt) {
+                <mat-card-subtitle>
+                  Atendido por {{ event.completedBy }} · {{ event.durationMinutes }} min
+                </mat-card-subtitle>
+              } @else if (isCurrentNode(event)) {
+                <mat-card-subtitle class="in-progress-label">En proceso...</mat-card-subtitle>
+              }
+            </mat-card-header>
+            @if (event.completedAt) {
+              <mat-card-content>
+                @if (event.notes) {
+                  <p class="notes">{{ event.notes }}</p>
+                }
+                <p class="timestamp">{{ event.completedAt | timeAgo }}</p>
+              </mat-card-content>
+            }
+          </mat-card>
+        </div>
+      }
+    </div>
+  </div>
+}

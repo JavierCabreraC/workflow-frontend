@@ -1,1 +1,73 @@
-<p>task-monitor works!</p>
+@if (loading) {
+  <div class="loading-center">
+    <mat-spinner diameter="48"></mat-spinner>
+  </div>
+} @else {
+  <div class="monitor-layout">
+    <div class="column column-pending">
+      <div class="column-header">
+        <mat-icon>pending</mat-icon>
+        <span>Pendientes ({{ pending.length }})</span>
+      </div>
+      @for (task of pending; track task.id) {
+        <mat-card class="task-card">
+          <mat-card-header>
+            <mat-card-title>{{ task.nodeName }}</mat-card-title>
+            <mat-card-subtitle>Trámite: {{ task.tramiteId }}</mat-card-subtitle>
+          </mat-card-header>
+          <mat-card-content>
+            <p class="time-label">Esperando desde {{ task.startedAt ?? task.completedAt | timeAgo }}</p>
+          </mat-card-content>
+          <mat-card-actions>
+            <button mat-raised-button color="primary" (click)="atender(task)">Atender</button>
+          </mat-card-actions>
+        </mat-card>
+      }
+      @if (pending.length === 0) {
+        <p class="empty-msg">Sin tareas pendientes</p>
+      }
+    </div>
+
+    <div class="column column-inprogress">
+      <div class="column-header">
+        <mat-icon>autorenew</mat-icon>
+        <span>En progreso ({{ inProgress.length }})</span>
+      </div>
+      @for (task of inProgress; track task.id) {
+        <mat-card class="task-card" style="cursor:pointer" [routerLink]="['/dashboard/task', task.id]">
+          <mat-card-header>
+            <mat-card-title>{{ task.nodeName }}</mat-card-title>
+            <mat-card-subtitle>Trámite: {{ task.tramiteId }}</mat-card-subtitle>
+          </mat-card-header>
+          <mat-card-content>
+            <p class="time-label">Iniciado {{ task.startedAt | timeAgo }}</p>
+          </mat-card-content>
+        </mat-card>
+      }
+      @if (inProgress.length === 0) {
+        <p class="empty-msg">Sin tareas en curso</p>
+      }
+    </div>
+
+    <div class="column column-completed">
+      <div class="column-header">
+        <mat-icon>check_circle</mat-icon>
+        <span>Completadas ({{ completed.length }})</span>
+      </div>
+      @for (task of completed; track task.id) {
+        <mat-card class="task-card task-card-done">
+          <mat-card-header>
+            <mat-card-title>{{ task.nodeName }}</mat-card-title>
+            <mat-card-subtitle>Trámite: {{ task.tramiteId }}</mat-card-subtitle>
+          </mat-card-header>
+          <mat-card-content>
+            <p class="time-label">Completado {{ task.completedAt | timeAgo }}</p>
+          </mat-card-content>
+        </mat-card>
+      }
+      @if (completed.length === 0) {
+        <p class="empty-msg">Sin tareas completadas</p>
+      }
+    </div>
+  </div>
+}

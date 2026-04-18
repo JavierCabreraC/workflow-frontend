@@ -1,0 +1,35 @@
+<div class="search-container">
+  <div class="search-toolbar">
+    <mat-form-field appearance="outline" class="search-field">
+      <mat-label>Buscar trámite</mat-label>
+      <mat-icon matPrefix>search</mat-icon>
+      <input matInput [formControl]="searchControl" placeholder="ID, cliente, política..." />
+    </mat-form-field>
+    <button mat-raised-button color="primary" (click)="openNewTramite()">
+      <mat-icon>add</mat-icon> Nuevo trámite
+    </button>
+  </div>
+
+  @if (loading) {
+    <div class="loading-center"><mat-spinner diameter="40"></mat-spinner></div>
+  } @else if (tramites.length === 0) {
+    <p class="empty-msg">No se encontraron trámites</p>
+  } @else {
+    <div class="results-list">
+      @for (t of tramites; track t.id) {
+        <mat-card class="tramite-card" (click)="goToTimeline(t.id)" style="cursor:pointer">
+          <mat-card-header>
+            <mat-card-title>{{ t.clientName }}</mat-card-title>
+            <mat-card-subtitle>ID: {{ t.id }}</mat-card-subtitle>
+          </mat-card-header>
+          <mat-card-content>
+            <div class="card-meta">
+              <app-status-badge [status]="t.status"></app-status-badge>
+              <span class="time">{{ t.createdAt | timeAgo }}</span>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      }
+    </div>
+  }
+</div>

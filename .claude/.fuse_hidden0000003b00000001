@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm install *)",
+      "Bash(npx ng *)",
+      "Bash(curl -s http://localhost:4200)"
+    ]
+  }
+}
