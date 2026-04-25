@@ -12,6 +12,12 @@ npm test           # Karma/Jasmine tests
 ng lint            # Lint (Angular CLI default)
 ```
 
+To run a single test file:
+
+```bash
+npx ng test --include='**/auth.service.spec.ts'
+```
+
 ## Architecture
 
 Angular 18 SPA for **workflow management** with three user roles: ADMIN (policy editor), FUNCIONARIO (task dashboard), CLIENTE (trámite tracking).
@@ -22,7 +28,7 @@ Angular 18 SPA for **workflow management** with three user roles: ADMIN (policy 
 - **mxGraph 4.2.2** — visual swimlane diagram editor in `features/policy-editor/canvas/`
 - **Yjs + y-websocket + STOMP/SockJS** — real-time collaboration infrastructure (dependencies wired, services partially stubbed)
 - **RxJS** — all state via BehaviorSubjects; no external state library
-- **JWT** — `@auth0/angular-jwt`, token in localStorage
+- **JWT** — `@auth0/angular-jwt`, token in localStorage under key `'token'`
 
 ### Directory layout
 
@@ -38,7 +44,7 @@ src/app/
 │   └── pipes/         # status-label, time-ago
 └── features/          # Lazy-loaded by role
     ├── auth/           # login (email + password, role-based redirect)
-    ├── policy-editor/  # ADMIN: canvas, node-panel, ai-assistant, policy-list
+    ├── policy-editor/  # ADMIN: canvas, node-panel, ai-assistant, policy-list, editor-shell
     ├── dashboard/      # FUNCIONARIO: task-monitor, task-detail
     ├── tramite/        # CLIENTE: tramite-search, tramite-timeline
     └── analytics/      # ADMIN: analytics-dashboard
@@ -50,12 +56,48 @@ src/app/
 - **Lazy loading** — all features via `loadChildren` in `app.routes.ts`
 - **Role-based redirects** — `roleGuard` routes ADMIN→`/editor`, FUNCIONARIO→`/dashboard`, CLIENTE→`/tramites`
 - **Backend URLs** — Spring Boot at `http://localhost:8080` (proxied through Angular dev server); AI service at `http://localhost:8000` is accessed only via Spring Boot, never directly from this frontend
-- **JWT interceptor skip** — URLs matching `/auth/*` bypass the Bearer token header
+- **JWT interceptor skip** — only `/auth/login` and `/auth/register` bypass the Bearer token header (hardcoded list in `jwt.interceptor.ts`, not a wildcard)
 - **Session restore** — `AuthService.restoreSession()` decodes token on app init, hydrates `currentUser$` BehaviorSubject
+- **Notifications** — always use `NotificationService.success/error/info()` (wraps `MatSnackBar`); never call `MatSnackBar` directly
 
-### Real-time (partially implemented)
+### mxGraph integration
 
-`WebSocketService` uses STOMP over SockJS. Yjs CRDT is a dependency for multi-user diagram sync but is not yet fully wired. When extending this, connect Yjs awareness to `policy-editor/canvas/` and bind `WebSocketService` to the Yjs provider.
+`CanvasComponent` loads mxGraph via CommonJS `require()` (not ES import) because the library lacks proper ES module support:
+
+```ts
+this.mx = (require as any)('mxgraph')({ mxBasePath: '', mxLoadResources: false, mxLoadStylesheets: false });
+```
+
+**Public API** (called by `EditorShellComponent`):
+
+- `loadGraph(graph: Graph)` — replaces the current diagram
+- `getGraph(): Graph` — serializes current mxGraph state to the domain model
+- `applyMutations(mutations: Mutation[])` — applies AI-generated or WS-received changes; emits `graphChanged`
+- `addLane(label?)` — inserts a new swimlane row
+
+Node types are `start | end | task | decision | fork | join`, each with fixed pixel dimensions in the `NODE_SIZES` constant. Nodes are drag-dropped from `NodePanelComponent` using the browser's native DragEvent API (`dataTransfer.getData('nodeType')`).
+
+### AI assistant (policy-editor)
+
+`AiAssistantComponent` has two modes toggled per-session:
+
+- **editor mode** — `POST /ai/diagram` with `{prompt, graph}` → `{mutations: Mutation[], explanation: string}`; mutations are emitted via `(mutationsReady)` and applied to the canvas, then broadcast over WS
+- **tutor mode** — `POST /ai/tutor` with `{prompt, sessionId}` → plain text; conversational only, no diagram changes
+
+Voice input uses the browser's `SpeechRecognition` API (Spanish, `es-ES`).
+
+### Real-time
+
+`WebSocketService` uses STOMP over SockJS. Topic conventions:
+
+- `/topic/policy/{policyId}` — mutation broadcast for collaborative editing (subscribed in `EditorShellComponent`)
+- `/topic/tasks/{userId}` — real-time task assignment notifications (subscribed in `TaskMonitorComponent`)
+
+Yjs CRDT is a dependency for multi-user diagram sync but is not yet fully wired. When extending this, connect Yjs awareness to `policy-editor/canvas/` and bind `WebSocketService` to the Yjs provider.
+
+### Error handling
+
+`errorInterceptor` handles: 401 (clears token + redirect to `/login`), 400/422 (shows `error.error.message`), 500 (generic message). 403 and 404 pass through silently — components handle these themselves if needed.
 
 ### Environments
 
