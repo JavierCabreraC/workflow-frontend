@@ -106,7 +106,7 @@ Centraliza todas las credenciales para no escribirlas en variables de entorno di
 
 ```bash
 # MongoDB URI (la misma para backend y FastAPI)
-echo -n "mongodb+srv://workflow_user:PASSWORD@cluster0.xxxxx.mongodb.net/workflow_db?retryWrites=true&w=majority" | \
+echo -n "mongodb-uri" | \
   gcloud secrets create MONGO_URI --data-file=-
 
 # Anthropic API Key (solo FastAPI la necesita)
