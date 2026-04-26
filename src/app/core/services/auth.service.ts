@@ -67,16 +67,21 @@ export class AuthService {
 
   private restoreSession(): void {
     const token = this.getToken();
-    if (token && !this.jwtHelper.isTokenExpired(token)) {
-      const decoded = this.jwtHelper.decodeToken(token);
-      const user: User = {
-        id: decoded.sub ?? decoded.id ?? '',
-        email: decoded.email ?? '',
-        name: decoded.name ?? '',
-        role: decoded.role as User['role'],
-        active: true
-      };
-      this.currentUser$.next(user);
+    if (!token) return;
+    try {
+      if (!this.jwtHelper.isTokenExpired(token)) {
+        const decoded = this.jwtHelper.decodeToken(token);
+        const user: User = {
+          id: decoded.sub ?? decoded.id ?? '',
+          email: decoded.email ?? '',
+          name: decoded.name ?? '',
+          role: decoded.role as User['role'],
+          active: true
+        };
+        this.currentUser$.next(user);
+      }
+    } catch {
+      localStorage.removeItem(this.TOKEN_KEY);
     }
   }
 }
