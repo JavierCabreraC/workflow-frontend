@@ -3,6 +3,7 @@ import {
   OnDestroy, Output, ViewChild, AfterViewInit, SimpleChanges
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { Graph, GraphNode, Lane, Edge, NodeType } from '../../../core/models/graph.model';
 import { Mutation } from '../../../core/models/policy.model';
@@ -40,7 +41,7 @@ const NODE_LABELS: Record<NodeType, string> = {
 @Component({
   selector: 'app-canvas',
   standalone: true,
-  imports: [CommonModule, MatProgressSpinnerModule],
+  imports: [CommonModule, MatIconModule, MatProgressSpinnerModule],
   templateUrl: './canvas.component.html',
   styleUrl: './canvas.component.scss',
 })
@@ -51,6 +52,8 @@ export class CanvasComponent implements AfterViewInit, OnChanges, OnDestroy {
   @Input() processingAi = false;
 
   @Output() graphChanged = new EventEmitter<Graph>();
+
+  isEmpty = true;
 
   private mx: any;
   private g: any;          // mxGraph instance
@@ -120,6 +123,7 @@ export class CanvasComponent implements AfterViewInit, OnChanges, OnDestroy {
     } finally {
       model.endUpdate();
     }
+    this.isEmpty = this.laneMap.size === 0;
     this.g.fit();
   }
 
@@ -237,6 +241,7 @@ export class CanvasComponent implements AfterViewInit, OnChanges, OnDestroy {
     } finally {
       model.endUpdate();
     }
+    this.isEmpty = false;
     this.graphChanged.emit(this.getGraph());
   }
 

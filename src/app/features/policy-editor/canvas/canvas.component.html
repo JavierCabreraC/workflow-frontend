@@ -1,5 +1,14 @@
 <div class="canvas-wrapper">
   <div #graphContainer class="graph-container"></div>
+
+  @if (!processingAi && isEmpty) {
+    <div class="empty-hint">
+      <mat-icon>account_tree</mat-icon>
+      <p>El diagrama está vacío.</p>
+      <p class="sub">Usa <strong>Agregar carril</strong> en el panel izquierdo y arrastra nodos al lienzo.</p>
+    </div>
+  }
+
   @if (processingAi) {
     <div class="ai-overlay">
       <mat-spinner diameter="40" />
