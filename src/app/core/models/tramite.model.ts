@@ -20,3 +20,10 @@ export interface Tramite {
   history: TramiteEvent[];
   createdAt: string;
 }
+
+export interface TramiteTimelineDto {
+  tramiteId: string;
+  clientName: string;
+  status: TramiteStatus;
+  history: TramiteEvent[];
+}

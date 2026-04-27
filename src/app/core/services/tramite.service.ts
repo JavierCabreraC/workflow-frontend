@@ -1,8 +1,9 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
-import { Tramite, TramiteEvent } from '../models/tramite.model';
+import { Tramite, TramiteEvent, TramiteTimelineDto } from '../models/tramite.model';
 
 @Injectable({ providedIn: 'root' })
 export class TramiteService {
@@ -23,7 +24,9 @@ export class TramiteService {
   }
 
   getTimeline(id: string): Observable<TramiteEvent[]> {
-    return this.http.get<TramiteEvent[]>(`${this.base}/${id}/timeline`);
+    return this.http.get<TramiteTimelineDto>(`${this.base}/${id}/timeline`).pipe(
+      map(dto => dto.history ?? [])
+    );
   }
 
   registerFcmToken(tramiteId: string, token: string): Observable<void> {
